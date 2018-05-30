@@ -8,6 +8,7 @@ var T = new Twit(config);
 const stream = T.stream("user");
 var my_screen_name = null;
 var my_name_on_account = null;
+var tweeterHandle = null;
 
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -26,10 +27,8 @@ T.get('account/verify_credentials', { skip_status: true },
 
 // the tweeter's info
 stream.on('tweet', function(tweeter) {
-
+    tweeterHandle = tweeter.user.screen_name;
     if (my_screen_name !== tweeter.user.screen_name) {
-        // console.log("tweeter's @screen_name: " + tweeter.user.screen_name + ": " + tweeter.text);
-        // console.log("my_@screen_name: ", my_screen_name);
         tweetIt("hello @" + tweeter.user.screen_name);
     }
 });
@@ -42,7 +41,7 @@ function tweetIt(txt) {
     var cmd = 'processing-java --sketch=`pwd`/tweetSketch --run';
 
     // write/overwrite & save txt argument to datafile.txt
-    var data2 = fs.writeFileSync('tweetSketch/datafile.txt', txt,'utf8', dataWritten);
+    var data2 = fs.writeFileSync('tweetSketch/datafile.txt', '@' + tweeterHandle,'utf8', dataWritten);
 
     function dataWritten(error){
         if(error) throw error;
