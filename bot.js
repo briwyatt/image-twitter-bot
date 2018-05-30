@@ -40,7 +40,7 @@ function tweetIt(txt) {
     console.log("I have received a tweet, I will now work on a response.");
     var cmd = 'processing-java --sketch=`pwd`/tweetSketch --run';
 
-    // write/overwrite & save txt argument to datafile.txt
+    // write/overwrite & save txt argument to datafile.txtx
     var data2 = fs.writeFileSync('tweetSketch/datafile.txt', '@' + tweeterHandle,'utf8', dataWritten);
 
     function dataWritten(error){
