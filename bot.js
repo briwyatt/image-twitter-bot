@@ -28,58 +28,67 @@ T.get('account/verify_credentials', { skip_status: true },
 stream.on('tweet', function(tweeter) {
 
     if (my_screen_name !== tweeter.user.screen_name) {
+        // console.log("tweeter's @screen_name: " + tweeter.user.screen_name + ": " + tweeter.text);
+        // console.log("my_@screen_name: ", my_screen_name);
         tweetIt("hello @" + tweeter.user.screen_name);
     }
 });
 
 // setInterval(tweetIt, 5000);
-// tweetIt("testing tweet to myself"); 
+// tweetIt("testing tweet to myself");
 
 function tweetIt(txt) {
     console.log("I have received a tweet, I will now work on a response.");
-    var cmd = 'processing-java --sketch=`pwd`/sketch --run';
-    // write data to image-data.txt
-    // save the data in that file
+    var cmd = 'processing-java --sketch=`pwd`/tweetSketch --run';
+
+    // write/overwrite & save txt argument to datafile.txt
+    var data2 = fs.writeFileSync('tweetSketch/datafile.txt', txt,'utf8', dataWritten);
+
+    function dataWritten(error){
+        if(error) throw error;
+        console.log("dataFile is written")
+
+    }
+
     exec(cmd, processing);
 
     function processing() {
-        var filename = 'sketch/custom-tweet.png';
+        var filename = 'tweetSketch/custom-tweet.png';
         var params = {
             encoding: 'base64'
         }
         var b64content = fs.readFileSync(filename, params);
-    
 
-    // must first upload the image before the tweet can be posted
-    T.post('media/upload', { media_data: b64content }, uploaded);
 
-    function uploaded(err, data, response) {
-        // the image will be ready, This is where I will tweet ! 
-        if (err) {
-            console.warn("An error occurred while posting", err);
-        }
+        // must first upload the image before the tweet can be posted
+        T.post('media/upload', { media_data: b64content }, uploaded);
 
-        // data will have an id on it 
-        // I need to refer to when I tweet
-        var id = data.media_id_string;
-
-        // create a tweet object 
-        var tweet = {
-            status: txt,
-            media_ids: [id]
-        }
-
-        T.post('statuses/update', tweet, tweeted);
-
-        function tweeted(err, data, response) {
+        function uploaded(err, data, response) {
+            // the image will be ready, This is where I will tweet ! 
             if (err) {
-                console.log("Something went wrong when posting the tweet!");
-                console.log("err: ", err);
-            } else {
-                console.log("tweet has been posted.");
+                console.warn("An error occurred while posting", err);
+            }
+
+            // data will have an id on it 
+            // I need to refer to when I tweet
+            var id = data.media_id_string;
+
+            // create a tweet object 
+            var tweet = {
+                status: txt,
+                media_ids: [id]
+            }
+
+            T.post('statuses/update', tweet, tweeted);
+
+            function tweeted(err, data, response) {
+                if (err) {
+                    console.log("Something went wrong when posting the tweet!");
+                    console.log("err: ", err);
+                } else {
+                    console.log("tweet has been posted.");
+                }
             }
         }
     }
-}
-//delete image-data.txt file or clear out the current data
 }

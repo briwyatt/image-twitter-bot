@@ -4,7 +4,7 @@
   "description": "twitterBot that creates images for any user that interacts with it",
   "main": "bot.js",
   "scripts": {
-    "start" : "node bot.js",
+    "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,6 +14,6 @@
   "author": "Bri Wyatt",
   "license": "ISC",
   "dependencies": {
-    "twit": "^2.2.9"
+    "twit": "^2.1.1"
   }
 }
